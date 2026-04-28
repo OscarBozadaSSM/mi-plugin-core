@@ -13,7 +13,7 @@ require_once __DIR__ . '/plugin-update-checker-master/plugin-update-checker.php'
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 $updateChecker = PucFactory::buildUpdateChecker(
-    'https://github.com/OscarBozadaSSM/mi-plugin-core/',
+    'https://github.com/tuusuario/mi-plugin-core/',
     __FILE__,
     'mi-plugin-core'
 );
@@ -119,7 +119,7 @@ add_shortcode('buscador_persona', function() {
     //FORMULARIO BUSCADOR
     $html .= '
     <form method="GET" style="margin-bottom:20px;">
-        <h3>🔎 Buscar persona</h3>
+        <h3>🔎 Buscar persona o ID:</h3>
         <input type="text" name="buscar" placeholder="Nombre o ID" value="'.$busqueda.'">
         <button type="submit">Buscar</button>
     </form>
