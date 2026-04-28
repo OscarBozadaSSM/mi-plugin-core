@@ -13,7 +13,7 @@ require 'plugin-update-checker/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 $updateChecker = PucFactory::buildUpdateChecker(
-    'https://github.com/tuusuario/mi-plugin-core/',
+    'https://github.com/OscarBozadaSSM/mi-plugin-core/',
     __FILE__,
     'mi-plugin-core'
 );
