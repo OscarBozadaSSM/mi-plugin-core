@@ -8,7 +8,7 @@ Version: 1.0.0
 if (!defined('ABSPATH')) exit;
 
 // 🔥 UPDATE CHECKER
-require 'plugin-update-checker/plugin-update-checker.php';
+require_once __DIR__ . '/plugin-update-checker-master/plugin-update-checker.php';
 
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
