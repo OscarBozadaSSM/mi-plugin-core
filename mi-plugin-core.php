@@ -2,7 +2,7 @@
 /*
 Plugin Name: Mi Plugin Core
 Description: Lógica central del sistema
-Version: 1.0.1
+Version: 1.0.2
 */
 
 if (!defined('ABSPATH')) exit;
@@ -119,7 +119,7 @@ add_shortcode('buscador_persona', function() {
     //FORMULARIO BUSCADOR
     $html .= '
     <form method="GET" style="margin-bottom:20px;">
-        <h3>🔎 Buscar persona</h3>
+        <h3>🔎 Buscar persona o ID:</h3>
         <input type="text" name="buscar" placeholder="Nombre o ID" value="'.$busqueda.'">
         <button type="submit">Buscar</button>
     </form>
