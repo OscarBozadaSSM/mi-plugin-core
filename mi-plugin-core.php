@@ -2,7 +2,7 @@
 /*
 Plugin Name: Mi Plugin Core
 Description: Lógica central del sistema
-Version: 1.0.0
+Version: 1.0.2
 */
 
 if (!defined('ABSPATH')) exit;
