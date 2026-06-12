@@ -2,18 +2,17 @@
 /*
 Plugin Name: Mi Plugin Core
 Description: Lógica central del sistema
-Version: 1.0.2
+Version: 1.0.3
 */
 
 if (!defined('ABSPATH')) exit;
 
-// 🔥 UPDATE CHECKER
 require_once __DIR__ . '/plugin-update-checker-master/plugin-update-checker.php';
 
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 $updateChecker = PucFactory::buildUpdateChecker(
-    'https://github.com/tuusuario/mi-plugin-core/',
+    'https://github.com/OscarBozadaSSM/mi-plugin-core/',
     __FILE__,
     'mi-plugin-core'
 );
@@ -426,6 +425,181 @@ add_shortcode('buscador_persona', function() {
             $wpdb->get_results("SELECT * FROM evaluaciones_seguridad WHERE persona_id = $persona_id", ARRAY_A)
         );
     }
+
+    return $html;
+});
+
+add_shortcode('reportes', function() {
+    
+});
+
+add_shortcode('catalogo_empresas', function() {
+    global $wpdb;
+
+    //Nombre de la tabla
+    $tabla = 'empresas_catalogo';
+
+    //Obtener empresas
+    $empresas = $wpdb->get_results("
+        SELECT 
+            id,
+            nombre_empresa,
+            logo_url,
+            descripcion
+        FROM $tabla
+        ORDER BY id ASC
+    ");
+
+    if (!$empresas) {
+        return "<p style='text-align:center;'>No hay empresas registradas aún.</p>";
+    }
+
+    $html = "
+    <div style='
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+        gap:20px;
+        width:90%;
+        max-width:1400px;
+        margin:40px auto;
+    '>
+    ";
+
+    foreach ($empresas as $empresa) {
+
+        //Logo
+        $logo = !empty($empresa->logo_url)
+            ? "<img src='{$empresa->logo_url}' alt='{$empresa->nombre_empresa}'
+                style='max-width:120px; max-height:120px; object-fit:contain; margin-bottom:15px;'>"
+            : "<div style='
+                    width:120px;
+                    height:120px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    background:#f0f0f0;
+                    color:#999;
+                    margin:0 auto 15px auto;
+                '>Sin logo</div>";
+
+        $html .= "
+        <div style='
+            border:1px solid #ccc;
+            border-radius:10px;
+            padding:20px;
+            text-align:center;
+            background:#fff;
+            box-shadow:0 4px 10px rgba(0,0,0,0.08);
+        '>
+
+            $logo
+
+            <h3 style='margin-bottom:10px;'>
+                {$empresa->nombre_empresa}
+            </h3>
+
+            <p style='
+                font-size:14px;
+                line-height:1.5;
+                color:#555;
+                text-align:justify;
+            '>
+                {$empresa->descripcion}
+            </p>
+
+        </div>
+        ";
+    }
+
+    $html .= "</div>";
+
+    return $html;
+});
+
+add_shortcode('admin_catalogo_empresas', function() {
+    global $wpdb;
+
+    $tabla = 'empresas_catalogo';
+    $html = '';
+
+    if (!current_user_can('administrator')) {
+        return "<p style='color:red; text-align:center;'>Acceso restringido.</p>";
+    }
+
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_empresa'])) {
+
+        $nombre = sanitize_text_field($_POST['nombre_empresa']);
+        $descripcion = sanitize_textarea_field($_POST['descripcion_empresa']);
+        $logo_url = '';
+
+        if (!empty($_FILES['logo_empresa']['name'])) {
+
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+
+            $upload = wp_handle_upload($_FILES['logo_empresa'], ['test_form' => false]);
+
+            if (!isset($upload['error'])) {
+                $logo_url = $upload['url'];
+            }
+        }
+
+        $wpdb->insert($tabla, [
+            'nombre_empresa' => $nombre,
+            'logo_url'       => $logo_url,
+            'descripcion'    => $descripcion
+        ]);
+
+        $html .= "<p style='color:green; text-align:center;'>Empresa registrada correctamente ✅</p>";
+    }
+
+    $html .= '
+    <div style="
+        width:90%;
+        max-width:700px;
+        margin:40px auto;
+        padding:30px;
+        border:1px solid #ccc;
+        border-radius:10px;
+        background:#fff;
+        box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    ">
+
+        <h2 style="text-align:center; margin-bottom:20px;">
+            Registrar Nueva Empresa
+        </h2>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <label><strong>Nombre de la empresa:</strong></label><br>
+            <input type="text" name="nombre_empresa" required
+                style="width:100%; padding:10px; margin:10px 0 20px 0;">
+
+            <label><strong>Logo:</strong></label><br>
+            <input type="file" name="logo_empresa" accept="image/*"
+                style="margin:10px 0 20px 0;"><br>
+
+            <label><strong>Descripción:</strong></label><br>
+            <textarea name="descripcion_empresa" required
+                style="width:100%; min-height:150px; padding:10px; margin:10px 0 20px 0;"></textarea>
+
+            <button type="submit" name="guardar_empresa"
+                style="
+                    width:100%;
+                    padding:15px;
+                    background:#333;
+                    color:white;
+                    border:none;
+                    cursor:pointer;
+                    font-size:16px;
+                    border-radius:5px;
+                ">
+                Guardar Empresa
+            </button>
+
+        </form>
+    </div>
+    ';
 
     return $html;
 });
